@@ -41,7 +41,7 @@ function FavoriteButton({ movie }) {
       );
       dispatch(addFav(apiFav.data));
       setIsFav(true);
-      console.log("FAAAAV", fav);
+      //console.log("FAAAAV", fav);
     }
     if (isFav === true) {
       const apiFavDelete = await axios.post(
@@ -52,7 +52,7 @@ function FavoriteButton({ movie }) {
         }
       );
       dispatch(deleteFav(movie.movieId || movie.id));
-      console.log(movie);
+      // console.log(movie);
       setIsFav(false);
     }
   };

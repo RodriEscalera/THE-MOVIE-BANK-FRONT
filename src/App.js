@@ -39,8 +39,6 @@ function App() {
     bringAllFavs();
   }, [user.id]);
 
-  console.log("Hola mundo");
-
   return (
     <div className="father">
       <NavBar />

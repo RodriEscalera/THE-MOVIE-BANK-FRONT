@@ -101,10 +101,10 @@ function SignUp() {
           password: password,
         }
       );
-      console.log("todo lay");
+      console.log("success");
       navigate("/login");
     } catch {
-      console.log("todo mal");
+      console.log("error");
     }
   };
 

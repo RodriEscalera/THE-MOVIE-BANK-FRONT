@@ -16,7 +16,7 @@ function IndividualMovie() {
     };
     seekMovie();
   }, []);
-  console.log(movie);
+  // console.log(movie);
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
       <Grid
