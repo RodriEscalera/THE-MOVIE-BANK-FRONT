@@ -19,6 +19,8 @@ import { setFav } from "./store/favorites";
 function App() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.user);
+  const fav = useSelector((state) => state.fav);
+
   useEffect(() => {
     axios
       .post("https://the-movie-bank-back.onrender.com/api/user/me", {
@@ -26,19 +28,25 @@ function App() {
       })
       .then((user) => {
         dispatch(setUser(user.data));
+      })
+      .catch((error) => {
+        console.log("Error en me");
       });
   }, []);
 
   useEffect(() => {
-    const bringAllFavs = async () => {
-      const { data } = await axios.get(
-        `https://the-movie-bank-back.onrender.com/api/favorites/findFavs/${user.id}`
-      );
-      dispatch(setFav(data));
-    };
-    bringAllFavs();
-  }, [user.id]);
-
+    if (user.id !== null) {
+      const bringAllFavs = async () => {
+        const { data } = await axios.get(
+          `https://the-movie-bank-back.onrender.com/api/favorites/findFavs/${user.id}`
+        );
+        dispatch(setFav(data));
+      };
+      bringAllFavs();
+    } else {
+      console.log("not yet");
+    }
+  }, [user]);
   return (
     <div className="father">
       <NavBar />
@@ -79,4 +87,8 @@ export default App;
           credentials: "include",
         }
 
+
+
+        https://the-movie-bank-back.onrender.com
+        http://localhost:3001
 */

@@ -34,3 +34,12 @@
 ::-webkit-scrollbar-thumb:active {
   background-color: rgb(7, 138, 64);
 }
+
+.notification .ant-notification-notice-description {
+  font-size: 1.5rem;
+  text-align: center;
+}
+
+.notification {
+  padding: 0.3rem;
+}

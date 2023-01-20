@@ -1,10 +1,14 @@
 import {
   Button,
+  createTheme,
   TextField,
+  ThemeProvider,
   Tooltip,
   Typography,
   useMediaQuery,
+  ClickAwayListener,
 } from "@mui/material";
+import { notification } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -14,7 +18,6 @@ import {
   samePassword,
   validationName,
 } from "../utils/regex";
-
 function SignUp() {
   const isActive = useMediaQuery("(max-width:530px)");
   const navigate = useNavigate();
@@ -37,6 +40,7 @@ function SignUp() {
   /////////////////////////////////////////////////////////////////////////
 
   const handleUserName = (e) => {
+    console.log(e);
     const userNameInput = e.target.value;
     setUserName(userNameInput);
     validationName(userNameInput)
@@ -92,34 +96,41 @@ function SignUp() {
   }, [isValidPass, areSamePass, isValidEmail, isValidName]);
 
   const handleSubmit = async () => {
-    try {
-      const registerUser = await axios.post(
-        "https://the-movie-bank-back.onrender.com/api/user/register",
-        {
-          name: userName,
-          email: email,
-          password: password,
-        }
-      );
-      console.log("success");
-      navigate("/login");
-    } catch {
-      console.log("error");
+    if (
+      userName.length == 0 ||
+      email.length == 0 ||
+      password.length == 0 ||
+      repeatPassword.length == 0
+    ) {
+      openNotification("top");
+    } else {
+      try {
+        const registerUser = await axios.post(
+          "https://the-movie-bank-back.onrender.com/api/user/register",
+          {
+            name: userName,
+            email: email.toLowerCase(),
+            password: password,
+          }
+        );
+        console.log("success");
+        navigate("/login");
+      } catch {
+        console.log("error");
+      }
     }
   };
 
-  const inputStyle = {
-    "& label": {
-      color: "white",
-    },
-    "& input": {
-      color: "white",
-    },
-    "& .css-1wc848c-MuiFormHelperText-root": {
-      color: "aqua",
-    },
-    marginTop: "1rem",
-    width: "20rem",
+  const openNotification = (placement) => {
+    notification.open({
+      description: "Complete all fields please!!",
+      placement,
+      className: "notification",
+      style: {
+        backgroundColor: "#585858",
+        color: "#00FF87",
+      },
+    });
   };
 
   return (
@@ -131,7 +142,7 @@ function SignUp() {
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          marginTop: "2rem",
+          marginTop: "3rem",
         }}
       >
         <div style={styledMediaQuery}></div>
@@ -151,63 +162,91 @@ function SignUp() {
           style={{
             display: "grid",
             flexDirection: "column",
-            marginTop: "3rem",
           }}
         >
           <TextField
+            name="userName"
+            autoComplete="off"
             sx={inputStyle}
             label="User name"
             variant="filled"
-            helperText="The user name must have at least 1 uppercase and 1 lowercase letter"
             onChange={handleUserName}
           />
 
           <TextField
+            name="email"
+            autoComplete="off"
             sx={inputStyle}
             label="Email"
             variant="filled"
-            helperText="Email must to have @ and . "
             onChange={handleEmail}
           />
+
           <TextField
+            name="password"
+            autoComplete="off"
             sx={inputStyle}
             type="password"
             label="Password"
             variant="filled"
-            helperText="Password must to have at least 6 characters, 1 uppercase letter and 1 special character"
             onChange={handlePassword}
           />
 
           <TextField
+            name="rePassword"
+            autoComplete="off"
             sx={inputStyle}
             type="password"
             label="Repeat password"
             variant="filled"
             onChange={handleRepeatPassword}
-            helperText="Must to be the same password"
           />
         </div>
+        <ThemeProvider theme={themeOptions}>
+          <Button
+            sx={{
+              width: "4rem",
+              color: "black",
 
-        <Button
-          sx={{
-            width: "4rem",
-            color: "black",
-            backgroundColor: "#00FF87",
-            position: "absolute",
-            marginTop: "33rem",
-            "&:hover": {
-              backgroundColor: "#00FF87",
-            },
-          }}
-          disabled={regexErr}
-          variant="contained"
-          onClick={handleSubmit}
-        >
-          SUBMIT
-        </Button>
+              position: "absolute",
+              marginTop: "27rem",
+            }}
+            disabled={regexErr}
+            variant="contained"
+            onClick={handleSubmit}
+          >
+            SUBMIT
+          </Button>
+        </ThemeProvider>
       </div>
     </>
   );
 }
 
 export default SignUp;
+
+const themeOptions = createTheme({
+  palette: {
+    primary: {
+      main: "#00FF87",
+    },
+    action: {
+      disabledBackground: "#858585",
+      disabled: "#black",
+    },
+  },
+});
+
+const inputStyle = {
+  "& label": {
+    color: "white",
+  },
+  "& input": {
+    color: "white",
+  },
+  "& .css-1wc848c-MuiFormHelperText-root": {
+    color: "aqua",
+  },
+  marginTop: "1rem",
+  width: "20rem",
+};

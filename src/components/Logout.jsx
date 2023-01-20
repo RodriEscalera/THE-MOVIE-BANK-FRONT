@@ -28,7 +28,10 @@ function Logout() {
         alignItems: "center",
       }}
     >
-      <Typography variant="h2" sx={{ color: "white", marginBottom: "2rem" }}>
+      <Typography
+        variant="h2"
+        sx={{ color: "white", marginBottom: "2rem", textAlign: "center" }}
+      >
         Wanna logout?
       </Typography>
       <Button
