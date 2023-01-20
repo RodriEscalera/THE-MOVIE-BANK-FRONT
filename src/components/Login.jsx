@@ -48,7 +48,7 @@ function Login() {
       const loginUser = await axios.post(
         "https://the-movie-bank-back.onrender.com/api/user/login",
         {
-          email: email,
+          email: email.toLowerCase(),
           password: password,
         }
       );
