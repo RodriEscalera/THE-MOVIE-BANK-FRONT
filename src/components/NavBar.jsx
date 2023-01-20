@@ -73,7 +73,7 @@ function NavBar() {
               sx={{
                 "& .css-1poimk-MuiPaper-root-MuiMenu-paper-MuiPaper-root-MuiPopover-paper":
                   {
-                    backgroundColor: "rgb(36, 210, 111)",
+                    backgroundColor: "#24D26F",
                   },
               }}
             >
