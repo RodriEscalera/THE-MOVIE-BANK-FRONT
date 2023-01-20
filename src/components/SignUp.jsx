@@ -40,7 +40,6 @@ function SignUp() {
   /////////////////////////////////////////////////////////////////////////
 
   const handleUserName = (e) => {
-    console.log(e);
     const userNameInput = e.target.value;
     setUserName(userNameInput);
     validationName(userNameInput)
