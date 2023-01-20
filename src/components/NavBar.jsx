@@ -69,12 +69,6 @@ function NavBar() {
                 MenuListProps={{
                   "aria-labelledby": "basic-button",
                 }}
-                sx={{
-                  "& .css-1poimk-MuiPaper-root-MuiMenu-paper-MuiPaper-root-MuiPopover-paper":
-                    {
-                      backgroundColor: "#24D26F",
-                    },
-                }}
               >
                 <Link to="/profile">
                   <MenuItem sx={{ color: "black" }} onClick={handleClose}>
