@@ -5,7 +5,7 @@ import {
   ThemeProvider,
   useMediaQuery,
 } from "@mui/material";
-import { notification, Tooltip } from "antd";
+import { message, notification, Tooltip } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -66,7 +66,7 @@ function SignUp() {
     }
   };
   const handleBlurRePassword = (e) => {
-    if (samePassword(e.target.value)) {
+    if (samePassword(inputs.password, e.target.value)) {
       setIsSamePass(false);
     } else {
       setIsSamePass(true);
@@ -93,10 +93,11 @@ function SignUp() {
             password: inputs.password,
           }
         );
-        console.log("success");
+        success();
         navigate("/login");
-      } catch {
-        console.log("error");
+      } catch (error) {
+        console.log("ERROR");
+        errorRegister();
       }
     }
   };
@@ -120,6 +121,22 @@ function SignUp() {
     setIsValidName(false);
   };
 
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const errorRegister = () => {
+    messageApi.open({
+      type: "error",
+      content: "Couldn't register",
+    });
+  };
+
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Register was successful",
+    });
+  };
+
   const cardStyle = {
     height: "36rem",
     width: "30rem",
@@ -134,9 +151,9 @@ function SignUp() {
     width: isActive ? "16rem" : "20rem",
     marginTop: "2rem",
   };
-
   return (
     <>
+      {contextHolder}
       <div
         style={{
           height: "90vh",
