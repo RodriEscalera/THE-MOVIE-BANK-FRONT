@@ -1,83 +1,105 @@
 import {
-  Alert,
   Button,
-  Stack,
+  createTheme,
   TextField,
-  Typography,
+  ThemeProvider,
   useMediaQuery,
 } from "@mui/material";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router";
 import { setUser } from "../store/user";
-
+import { message } from "antd";
+import CircularProgress from "@mui/material/CircularProgress";
+import { motion } from "framer-motion";
 function Login() {
   const isActive = useMediaQuery("(max-width:530px)");
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [styledMediaQuery, setStyledMediaQuery] = useState({});
+
+  ///////////////////////////////////////////////
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isInvalidAccount, setIsInvalidAccount] = useState(false);
+  const [charging, setCharging] = useState(false);
   const handleEmail = (e) => setEmail(e.target.value);
   const handlePassword = (e) => setPassword(e.target.value);
+  /////////////////////////////////////////////
 
-  useEffect(() => {
-    isActive
-      ? setStyledMediaQuery({
-          height: "30rem",
-          width: "21rem",
-          backgroundColor: "black",
-          borderRadius: "4%",
-          opacity: "0.2",
-          position: "absolute",
-        })
-      : setStyledMediaQuery({
-          height: "30rem",
-          width: "30rem",
-          backgroundColor: "black",
-          borderRadius: "4%",
-          opacity: "0.2",
-          position: "absolute",
-        });
-  }, [isActive]);
+  const styledMediaQuery = {
+    height: "30rem",
+    width: isActive ? "21rem" : "30rem",
+    backgroundColor: "black",
+    borderRadius: "4%",
+    opacity: "0.2",
+    position: "absolute",
+  };
 
-  const handleSubmit = async () => {
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const error = () => {
+    messageApi.open({
+      type: "error",
+      content: "Invalid email or password",
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    eventCharge(true);
     try {
       const loginUser = await axios.post(
-        "https://the-movie-bank-back.onrender.com/api/user/login",
+        "http://localhost:3001/api/user/login",
         {
           email: email.toLowerCase(),
           password: password,
         }
       );
+
       window.localStorage.setItem("token", loginUser.data[1]);
       dispatch(setUser(loginUser.data[0]));
       navigate("/");
     } catch {
-      setIsInvalidAccount(true);
+      eventCharge(false);
+      error();
     }
   };
 
+  const variants = {
+    initial: {
+      top: -100,
+    },
+    animate: {
+      top: 100,
+    },
+  };
+  const eventCharge = (bool) => {
+    setCharging(bool);
+  };
   return (
     <>
-      {isInvalidAccount ? (
-        <Stack
-          sx={{
-            width: "100%",
+      {contextHolder}
 
-            "& .css-xilmwd-MuiPaper-root-MuiAlert-root": {
-              backgroundColor: "rgb(187 41 41)",
-              color: "white",
-            },
-          }}
-          spacing={2}
-        >
-          <Alert severity="error">Invalid email or password!</Alert>
-        </Stack>
-      ) : null}
-      <div
+      <motion.div
+        variants={variants}
+        initial={charging ? "initial" : "animate"}
+        animate={charging ? "animate" : "initial"}
+        style={{
+          position: "absolute",
+          marginLeft: "auto",
+          marginRight: "auto",
+          left: 0,
+          right: 0,
+          textAlign: "center",
+        }}
+      >
+        <ThemeProvider theme={circleCharge}>
+          <CircularProgress />
+        </ThemeProvider>
+      </motion.div>
+
+      <form
+        onSubmit={handleSubmit}
         style={{
           height: "90vh",
           position: "relative",
@@ -106,40 +128,30 @@ function Login() {
             marginTop: "3rem",
           }}
         >
-          <TextField
-            sx={{
-              "& label": {
-                color: "white",
-              },
-
-              "& input": {
-                color: "white",
-              },
-              marginTop: "1rem",
-              width: "20rem",
-            }}
-            label="Email"
-            variant="filled"
-            onChange={handleEmail}
-          />
-          <TextField
-            sx={{
-              "& label": {
-                color: "white",
-              },
-              "& input": {
-                color: "white",
-              },
-              marginTop: "1rem",
-              width: "20rem",
-            }}
-            label="Password"
-            variant="filled"
-            type="password"
-            onChange={handlePassword}
-          />
+          <ThemeProvider theme={inputTheme}>
+            <TextField
+              sx={{
+                marginTop: "1rem",
+                width: "20rem",
+              }}
+              label="Email"
+              variant="filled"
+              onChange={handleEmail}
+            />
+            <TextField
+              sx={{
+                marginTop: "1rem",
+                width: "20rem",
+              }}
+              label="Password"
+              variant="filled"
+              type="password"
+              onChange={handlePassword}
+            />
+          </ThemeProvider>
         </div>
         <Button
+          type="submit"
           sx={{
             width: "4rem",
             color: "black",
@@ -155,9 +167,35 @@ function Login() {
         >
           SUBMIT
         </Button>
-      </div>
+      </form>
     </>
   );
 }
 
 export default Login;
+
+const inputTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#00FF6E",
+    },
+    secondary: {
+      main: "#00FF6E",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "#ffffff",
+    },
+  },
+});
+
+const circleCharge = createTheme({
+  palette: {
+    primary: {
+      main: "#ffffff",
+    },
+    secondary: {
+      main: "#00FF6E",
+    },
+  },
+});

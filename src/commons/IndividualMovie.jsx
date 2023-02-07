@@ -2,20 +2,29 @@ import { Grid } from "@mui/material";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router";
+import { useSelector } from "react-redux";
 
 function IndividualMovie() {
+  const region = useSelector((state) => state.region);
+  const user = useSelector((state) => state.user);
+
   const { id } = useParams();
   const [movie, setMovie] = useState({});
+
   useEffect(() => {
     const seekMovie = async () => {
       const { data } = await axios.get(
-        `https://api.themoviedb.org/3/movie/${id}?api_key=35048305f648579c608620afad684324&language=en-US`
+        `https://api.themoviedb.org/3/movie/${id}?api_key=35048305f648579c608620afad684324&language=${
+          region === "ENGLISH" ? "en-us" : "es-mx"
+        }`
       );
 
       setMovie(data);
     };
-    seekMovie();
-  }, []);
+    if (region) {
+      seekMovie();
+    }
+  }, [user, region]);
   // console.log(movie);
   return (
     <div style={{ display: "flex", justifyContent: "center" }}>
@@ -34,6 +43,7 @@ function IndividualMovie() {
               borderRadius: "3%",
               height: "25rem",
               width: "16rem",
+              objectFit: "cover",
             }}
             src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
           />
@@ -48,44 +58,3 @@ function IndividualMovie() {
 }
 
 export default IndividualMovie;
-
-/*
-
-        xs={12}
-        sm={6}
-        md={4}
-        lg={6}
-
-
-
-
-
-
-
-
-
-  <div
-      style={{
-        color: "white",
-        display: "flex",
-        justifyContent: "center",
-        marginTop: "3rem",
-        position: "relative",
-      }}
-    >
-      <img
-        style={{
-          marginRight: "55rem",
-          width: "20%",
-          borderRadius: "3%",
-          marginLeft: "5rem",
-        }}
-        src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`}
-      />
-      <div style={{ marginLeft: "5rem", width: "40vw", position: "absolute" }}>
-        <h1 style={{ fontSize: "2rem" }}>{movie.title}</h1>
-        <p style={{ width: "40vw" }}>{movie.overview}</p>
-      </div>
-    </div>
-
-*/

@@ -1,40 +1,26 @@
-import { Button } from "@mui/material";
 import React from "react";
+import { Button, Typography, useMediaQuery } from "@mui/material";
 import { Link } from "react-router-dom";
-import { Typography } from "@mui/material";
 function Home() {
+  const mediaQuery = useMediaQuery("(max-width:447px)");
   return (
     <div
       style={{
-        width: "100vw",
-        height: "70vh",
         display: "flex",
-        alignItems: "center",
         justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
         flexDirection: "column",
       }}
     >
-      <Typography variant="h2" sx={{ color: "white", textAlign: "center" }}>
-        Welcome to The Movie Bank!!
+      <Typography
+        variant={mediaQuery ? "h4" : "h2"}
+        sx={{ color: "white", textAlign: "center" }}
+      >
+        Popular movies:
       </Typography>
-      <Link to="/movies">
-        <Button
-          sx={{
-            width: "10rem",
-            height: "3rem",
-            color: "black",
-            marginTop: "2rem",
-            backgroundColor: "#00FF87",
-            fontSize: "2rem",
-            "&:hover": {
-              backgroundColor: "#00FF87",
-              color: "white",
-            },
-          }}
-          variant="contained"
-        >
-          EXPLORE
-        </Button>
+      <Link to="/popularmovies">
+        <Button variant="contained">Go!</Button>
       </Link>
     </div>
   );

@@ -3,12 +3,9 @@ import {
   createTheme,
   TextField,
   ThemeProvider,
-  Tooltip,
-  Typography,
   useMediaQuery,
-  ClickAwayListener,
 } from "@mui/material";
-import { notification } from "antd";
+import { notification, Tooltip } from "antd";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
@@ -20,96 +17,80 @@ import {
 } from "../utils/regex";
 function SignUp() {
   const isActive = useMediaQuery("(max-width:530px)");
+
   const navigate = useNavigate();
-  const [styledMediaQuery, setStyledMediaQuery] = useState({});
-  /////////////////////////////////////////////////////////////////////////
-  const [userName, setUserName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [repeatPassword, setRepeatPassword] = useState("");
+
+  const [inputs, setInputs] = useState({
+    userName: "",
+    email: "",
+    password: "",
+    rePassword: "",
+  });
 
   ////////////
-  const [isValidName, setIsValidName] = useState(true);
-  const [isValidEmail, setIsValidEmail] = useState(true);
-  const [isValidPass, setIsValidPass] = useState(true);
-  const [areSamePass, setAreSamePass] = useState(true);
+  const [isValidName, setIsValidName] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(false);
+  const [isValidPass, setIsValidPass] = useState(false);
+  const [IsSamePass, setIsSamePass] = useState(false);
   ////////////
 
   const [regexErr, setRegexErr] = useState(false);
 
-  /////////////////////////////////////////////////////////////////////////
+  /////////////////////////////////////
+  const handleInputs = (e) => {
+    const { name, value } = e.target;
 
-  const handleUserName = (e) => {
-    const userNameInput = e.target.value;
-    setUserName(userNameInput);
-    validationName(userNameInput)
-      ? setIsValidName(true)
-      : setIsValidName(false);
-  };
-  const handleEmail = (e) => {
-    const emailInput = e.target.value;
-    setEmail(emailInput);
-    isEmail(emailInput) ? setIsValidEmail(true) : setIsValidEmail(false);
-  };
-  const handlePassword = (e) => {
-    const passwordInput = e.target.value;
-    setPassword(passwordInput);
-    isValidPassword(passwordInput)
-      ? setIsValidPass(true)
-      : setIsValidPass(false);
+    setInputs({ ...inputs, [name]: value });
   };
 
-  const handleRepeatPassword = (e) => {
-    const passwordInput = e.target.value;
-    setRepeatPassword(passwordInput);
-    samePassword(password, passwordInput)
-      ? setAreSamePass(true)
-      : setAreSamePass(false);
-  };
-  useEffect(() => {
-    isActive
-      ? setStyledMediaQuery({
-          height: "36rem",
-          width: "21rem",
-          backgroundColor: "black",
-          borderRadius: "4%",
-          opacity: "0.2",
-          position: "absolute",
-        })
-      : setStyledMediaQuery({
-          height: "36rem",
-          width: "30rem",
-          backgroundColor: "black",
-          borderRadius: "4%",
-          opacity: "0.2",
-          position: "absolute",
-        });
-  }, [isActive]);
-
-  useEffect(() => {
-    if (!isValidPass || !areSamePass || !isValidEmail || !isValidName)
-      setRegexErr(true);
-    else {
-      setRegexErr(false);
+  const handleBlurName = (e) => {
+    if (validationName(e.target.value)) {
+      setIsValidName(false);
+    } else {
+      setIsValidName(true);
     }
-  }, [isValidPass, areSamePass, isValidEmail, isValidName]);
+  };
+
+  const handleBlurEmail = (e) => {
+    if (isEmail(e.target.value)) {
+      setIsValidEmail(false);
+    } else {
+      setIsValidEmail(true);
+    }
+  };
+  const handleBlurPassword = (e) => {
+    if (isValidPassword(e.target.value)) {
+      setIsValidPass(false);
+    } else {
+      setIsValidPass(true);
+    }
+  };
+  const handleBlurRePassword = (e) => {
+    if (samePassword(e.target.value)) {
+      setIsSamePass(false);
+    } else {
+      setIsSamePass(true);
+    }
+  };
+  /////////////////////////////////////
 
   const handleSubmit = async () => {
     if (
-      userName.length == 0 ||
-      email.length == 0 ||
-      password.length == 0 ||
-      repeatPassword.length == 0
+      inputs.userName.length == 0 ||
+      inputs.email.length == 0 ||
+      inputs.password.length == 0 ||
+      inputs.rePassword.length == 0 ||
+      (isValidName, isValidEmail, isValidPass, IsSamePass)
     ) {
       openNotification("top");
     } else {
       try {
         const registerUser = await axios.post(
-          "https://the-movie-bank-back.onrender.com/api/user/register",
+          "http://localhost:3001/api/user/register",
           {
-            name: userName,
-            email: email.toLowerCase(),
-            password: password,
+            name: inputs.userName,
+            email: inputs.email.toLowerCase(),
+            password: inputs.password,
           }
         );
         console.log("success");
@@ -132,6 +113,28 @@ function SignUp() {
     });
   };
 
+  const turnMessages = () => {
+    setIsSamePass(false);
+    setIsValidPass(false);
+    setIsValidEmail(false);
+    setIsValidName(false);
+  };
+
+  const cardStyle = {
+    height: "36rem",
+    width: "30rem",
+    borderRadius: "4%",
+    flexDirection: "column",
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  };
+
+  const textFields = {
+    width: isActive ? "16rem" : "20rem",
+    marginTop: "2rem",
+  };
+
   return (
     <>
       <div
@@ -144,79 +147,112 @@ function SignUp() {
           marginTop: "3rem",
         }}
       >
-        <div style={styledMediaQuery}></div>
-
-        <h1
-          style={{
-            color: "#00FF87",
-            marginTop: "-6rem",
-            textAlign: "center",
-            position: "absolute",
-            marginBottom: "20rem",
-          }}
-        >
-          REGISTER
-        </h1>
-        <div
-          style={{
-            display: "grid",
-            flexDirection: "column",
-          }}
-        >
-          <TextField
-            name="userName"
-            autoComplete="off"
-            sx={inputStyle}
-            label="User name"
-            variant="filled"
-            onChange={handleUserName}
-          />
-
-          <TextField
-            name="email"
-            autoComplete="off"
-            sx={inputStyle}
-            label="Email"
-            variant="filled"
-            onChange={handleEmail}
-          />
-
-          <TextField
-            name="password"
-            autoComplete="off"
-            sx={inputStyle}
-            type="password"
-            label="Password"
-            variant="filled"
-            onChange={handlePassword}
-          />
-
-          <TextField
-            name="rePassword"
-            autoComplete="off"
-            sx={inputStyle}
-            type="password"
-            label="Repeat password"
-            variant="filled"
-            onChange={handleRepeatPassword}
-          />
-        </div>
-        <ThemeProvider theme={themeOptions}>
-          <Button
-            sx={{
-              width: "4rem",
-              color: "black",
-
+        <div style={cardStyle}>
+          <div
+            onClick={turnMessages}
+            style={{
+              height: "36rem",
+              width: isActive ? "20rem" : "30rem",
               position: "absolute",
-              marginTop: "27rem",
+              borderRadius: "4%",
+              opacity: 0.2,
+              backgroundColor: "black",
             }}
-            disabled={regexErr}
-            variant="contained"
-            onClick={handleSubmit}
+          ></div>
+          <h1
+            style={{
+              color: "#00FF87",
+              textAlign: "center",
+            }}
           >
-            SUBMIT
-          </Button>
-        </ThemeProvider>
+            REGISTER
+          </h1>
+
+          <ThemeProvider theme={inputTheme}>
+            <Tooltip
+              placement="top"
+              title="Name should have at list an upper case and 3 characters"
+              color="#00BDFF"
+              open={isValidName}
+            >
+              <TextField
+                onBlur={handleBlurName}
+                name="userName"
+                autoComplete="off"
+                label="User name"
+                variant="filled"
+                onChange={handleInputs}
+                sx={textFields}
+              />
+            </Tooltip>
+            <Tooltip
+              placement="top"
+              title="Write a valid Email"
+              color="#00BDFF"
+              open={isValidEmail}
+            >
+              <TextField
+                onBlur={handleBlurEmail}
+                name="email"
+                autoComplete="off"
+                label="Email"
+                variant="filled"
+                onChange={handleInputs}
+                sx={textFields}
+              />
+            </Tooltip>
+            <Tooltip
+              placement="top"
+              title="It should have at least 8 characters, numbers, uppercase and lowercase"
+              color="#00BDFF"
+              open={isValidPass}
+            >
+              <TextField
+                onBlur={handleBlurPassword}
+                name="password"
+                autoComplete="off"
+                type="password"
+                label="Password"
+                variant="filled"
+                onChange={handleInputs}
+                sx={textFields}
+              />
+            </Tooltip>
+
+            <Tooltip
+              placement="top"
+              title="Write the same password"
+              color="#00BDFF"
+              open={IsSamePass}
+            >
+              <TextField
+                onBlur={handleBlurRePassword}
+                name="rePassword"
+                autoComplete="off"
+                type="password"
+                label="Repeat password"
+                variant="filled"
+                onChange={handleInputs}
+                sx={textFields}
+              />
+            </Tooltip>
+          </ThemeProvider>
+
+          <ThemeProvider theme={themeOptions}>
+            <Button
+              sx={{
+                width: "4rem",
+                color: "black",
+                marginTop: "2rem",
+              }}
+              disabled={regexErr}
+              variant="contained"
+              onClick={handleSubmit}
+            >
+              SUBMIT
+            </Button>
+          </ThemeProvider>
+        </div>
       </div>
     </>
   );
@@ -236,16 +272,17 @@ const themeOptions = createTheme({
   },
 });
 
-const inputStyle = {
-  "& label": {
-    color: "white",
+const inputTheme = createTheme({
+  palette: {
+    primary: {
+      main: "#00FF6E",
+    },
+    secondary: {
+      main: "#00FF6E",
+    },
+    text: {
+      primary: "#ffffff",
+      secondary: "#ffffff",
+    },
   },
-  "& input": {
-    color: "white",
-  },
-  "& .css-1wc848c-MuiFormHelperText-root": {
-    color: "aqua",
-  },
-  marginTop: "1rem",
-  width: "20rem",
-};
+});

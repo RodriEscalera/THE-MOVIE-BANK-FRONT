@@ -5,8 +5,9 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { addFav, deleteFav } from "../store/favorites";
+import { message } from "antd";
 
-function FavoriteButton({ movie, forFav }) {
+function FavoriteButton({ movie, forFav, isMovie }) {
   const user = useSelector((state) => state.user);
 
   const dispatch = useDispatch();
@@ -16,40 +17,72 @@ function FavoriteButton({ movie, forFav }) {
   /////////////////////////////
   const verifyFav = async () => {
     const { data } = await axios.post(
-      "https://the-movie-bank-back.onrender.com/api/favorites/verifyFav",
+      "http://localhost:3001/api/favorites/verifyFav",
       {
         userId: user.id,
-        movieId: forFav ? movie.movieId : movie.id,
+        contentId: forFav ? movie.contentId : movie.id,
+        isMovie: isMovie,
       }
     );
     setIconFav(data);
     setIsFav(data);
   };
   ////////////////////////////
-
+  const [messageApi, contextHolder] = message.useMessage();
+  const success = () => {
+    messageApi.open({
+      type: "success",
+      content: "Added to you favorites list!",
+    });
+  };
+  const error = () => {
+    messageApi.open({
+      type: "error",
+      content: "Couldn't be add to your favorites list :(",
+    });
+  };
   /////////////////////////////
   const handleFav = async () => {
     if (isFav === false) {
-      const apiFav = await axios.post(
-        "https://the-movie-bank-back.onrender.com/api/favorites/addFav",
-        {
-          userId: user.id,
-          movieId: movie.id,
-        }
-      );
-      dispatch(addFav(apiFav.data));
-      setIsFav(true);
-    }
-    if (isFav === true) {
-      const apiFavDelete = await axios.post(
-        "https://the-movie-bank-back.onrender.com/api/favorites/deleteFavs",
-        {
-          movieId: forFav ? movie.movieId : movie.id,
-          userId: user.id,
-        }
-      );
-      dispatch(deleteFav(forFav ? movie.movieId : movie.id));
-      setIsFav(false);
+      try {
+        setIsFav(true);
+        const apiFav = await axios.post(
+          "http://localhost:3001/api/favorites/addFav",
+          {
+            userId: user.id,
+            contentId: movie.id,
+            isMovie: isMovie,
+          }
+        );
+        dispatch(addFav(apiFav.data));
+      } catch (err) {
+        setIsFav(false);
+
+        console.log("There was an error");
+      }
+    } else {
+      try {
+        setIsFav(false);
+        dispatch(
+          deleteFav(
+            forFav
+              ? { contentId: movie.contentId, isMovie: movie.isMovie }
+              : { contentId: movie.id, isMovie: isMovie }
+          )
+        );
+        const apiFavDelete = await axios.post(
+          "http://localhost:3001/api/favorites/deleteFavs",
+          {
+            contentId: forFav ? parseInt(movie.contentId) : parseInt(movie.id),
+            userId: user.id,
+            isMovie: isMovie,
+          }
+        );
+      } catch (err) {
+        setIsFav(true);
+
+        console.log("There was an error");
+      }
     }
   };
   /////////////////////////
@@ -62,6 +95,7 @@ function FavoriteButton({ movie, forFav }) {
 
   return (
     <>
+      {contextHolder}
       <Button onClick={handleFav}>
         {iconFav ? (
           <FavoriteIcon sx={{ color: "red" }} />

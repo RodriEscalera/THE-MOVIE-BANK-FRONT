@@ -17,10 +17,21 @@ const reducer = createReducer(initialState, {
     return {
       ...state,
       favorites: state.favorites.filter(
-        (fav) => fav.movieId !== action.payload
+        (item) => item.contentId !== action.payload.contentId
       ),
     };
   },
 });
 
 export default reducer;
+
+/*
+ [deleteFav]: (state, action) => {
+    return {
+      ...state,
+      favorites: state.favorites.filter(
+        (fav) => fav.movieId !== action.payload
+      ),
+    };
+  },
+*/
