@@ -38,7 +38,7 @@ function App() {
       dispatch(setRegion(window.localStorage.getItem("region")));
     }
     axios
-      .post("http://localhost:3001/api/user/me", {
+      .post("https://the-movie-bank-back.onrender.com/api/user/me", {
         token: window.localStorage.getItem("token"),
       })
       .then((user) => {
@@ -53,7 +53,7 @@ function App() {
     if (user.id !== null) {
       const bringAllFavs = async () => {
         const { data } = await axios.get(
-          `http://localhost:3001/api/favorites/findFavs/${user.id}`
+          `https://the-movie-bank-back.onrender.com/api/favorites/findFavs/${user.id}`
         );
         dispatch(setFav(data));
       };

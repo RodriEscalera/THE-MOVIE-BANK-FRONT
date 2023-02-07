@@ -49,7 +49,7 @@ function Login() {
     eventCharge(true);
     try {
       const loginUser = await axios.post(
-        "http://localhost:3001/api/user/login",
+        "https://the-movie-bank-back.onrender.com/api/user/login",
         {
           email: email.toLowerCase(),
           password: password,

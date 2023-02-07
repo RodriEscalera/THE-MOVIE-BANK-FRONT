@@ -86,7 +86,7 @@ function SignUp() {
     } else {
       try {
         const registerUser = await axios.post(
-          "http://localhost:3001/api/user/register",
+          "https://the-movie-bank-back.onrender.com/api/user/register",
           {
             name: inputs.userName,
             email: inputs.email.toLowerCase(),

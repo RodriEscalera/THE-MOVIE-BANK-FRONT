@@ -17,7 +17,7 @@ function FavoriteButton({ movie, forFav, isMovie }) {
   /////////////////////////////
   const verifyFav = async () => {
     const { data } = await axios.post(
-      "http://localhost:3001/api/favorites/verifyFav",
+      "https://the-movie-bank-back.onrender.com/api/favorites/verifyFav",
       {
         userId: user.id,
         contentId: forFav ? movie.contentId : movie.id,
@@ -47,7 +47,7 @@ function FavoriteButton({ movie, forFav, isMovie }) {
       try {
         setIsFav(true);
         const apiFav = await axios.post(
-          "http://localhost:3001/api/favorites/addFav",
+          "https://the-movie-bank-back.onrender.com/api/favorites/addFav",
           {
             userId: user.id,
             contentId: movie.id,
@@ -71,7 +71,7 @@ function FavoriteButton({ movie, forFav, isMovie }) {
           )
         );
         const apiFavDelete = await axios.post(
-          "http://localhost:3001/api/favorites/deleteFavs",
+          "https://the-movie-bank-back.onrender.com/api/favorites/deleteFavs",
           {
             contentId: forFav ? parseInt(movie.contentId) : parseInt(movie.id),
             userId: user.id,
